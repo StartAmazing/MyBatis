@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ll.mybatis.mapper.EmpMapper">
+    
+    <resultMap id="empMap" type="employee">
+        <constructor>
+            <arg column="Date" javaType="java.util.Date"></arg>
+        </constructor>
+    </resultMap>
+
+<!--
+    ResultSet = query();
+    while(ResultSet.next){
+        Employee emp = employee.class.newInstance();
+        Field[] fieldArray = employee.class.getDeclaredFields();
+        for(i = 0; i < filedArray.length; i++){
+            Field fieldObj = fieldArray[i];
+            String fieldName = fieldObj .getName();
+            String value = ResultSet.getString(fieldName);
+            Class fieldType = fieldObj.getType();
+            if(Integer.class == fieldType){
+                fieldObj.set(emp,Integer.valueOf(value));   //之前类型转换
+            }else if(Boolean.class == fieldType){
+                fieldObj.set(emp,Boolean.valueOf(value));
+            }
+            ....
+
+
+            column ：d_name => dName
+            Dept类 ：dName
+        }
+    }
+  -->
+
+    <select id="empFind" resultMap="empMap">
+        select * from Emp
+    </select>
+
+    <select id="empFind2" resultMap="empMap">
+        select * from emp
+        where 1 = 1
+        <choose>
+            <when test="sal >= 19000">
+                and ename = 'Frank'
+            </when>
+            <when test="sal >= 15000">
+                and ename = 'Eric'
+            </when>
+            <otherwise>
+                and ename in ('Bob','Alice')
+            </otherwise>
+        </choose>
+    </select>
+</mapper>

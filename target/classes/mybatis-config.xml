@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <settings>
+        <setting name="cacheEnabled" value="false"/>
+    </settings>
+    <!--  别名  -->
+    <typeAliases>
+        <package name="com.ll.mybatis.entity" />
+    </typeAliases>
+
+
+    <typeHandlers>
+        <typeHandler handler="com.ll.mybatis.util.MyTypeHandler"
+            javaType="Boolean" jdbcType="NUMERIC"
+        />
+    </typeHandlers>
+
+    <!--
+       objectFactory 负责创建查询之后得到的结果集数据行对应的一个实体类对象
+       如果查询的结果集有三行,则创建三个对象,不过只能调用实体类中默认构造方
+       法进行处理.如果我们对mybatis提供的对象工厂不满意,可以自定义对象工厂
+     -->
+    <objectFactory type="com.ll.mybatis.util.MyObjectFactory">
+
+    </objectFactory>
+    
+    <plugins>
+        <plugin interceptor="com.ll.mybatis.util.MySimpleInterceptor"></plugin>
+    </plugins>
+
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/kaikeba?serverTimezone=GMT%2B8"/>
+                <property name="username" value="root"/>
+                <property name="password" value="liucanlie"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="mapper/DeptMapper.xml"/>
+        <mapper resource="mapper/EmpMapper.xml" />
+<!--        <package name="com.ll.mybatis.mapper"/>-->
+    </mappers>
+
+</configuration>

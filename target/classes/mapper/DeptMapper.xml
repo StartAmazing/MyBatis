@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ll.mybatis.mapper.DeptMapper">
+    <resultMap id="DeptResultMap" type="Dept">
+    <!--  数据库中的flag列对应上实体对象中的flag属性,指定列和属性的对应关系才进行自定义类型转换      -->
+    <result column="flag" property="flag"
+            typeHandler="com.ll.mybatis.util.MyTypeHandler" />
+</resultMap>
+
+    <insert id="insertDept">
+        insert into dept values(#{deptNo},#{dname},#{dmanager}, #{flag})
+    </insert>
+    <select id="deptFind" resultMap="DeptResultMap">
+        select * from dept
+    </select>
+
+    <select id="deptFind2" resultType="dept">
+<!--         select * from dept where dname = #{departnname} -->
+        select * from dept where dname = ${value}
+    </select>
+
+    <select id="deptFind3" resultType="dept">
+<!-- 动态去指定读取表 可能是dept 也可能是dept2 -->
+ <!--       select * from #{tableName} 抛出异常-->
+        select * from ${tableName}
+    </select>
+
+    <!--
+        if标签根据条件是否为真，来决定if标签包含的内容是否能够出现在当前
+        的SQL语句中
+      -->
+    <select id="dept_1" resultType="dept">
+        SELECT * from dept
+        where 1 = 1
+        <!-- 如果参数对象deptno不等于null并且不等于0-->
+        <if test="deptNo != null and deptNo != 0" >
+            and deptNo = #{deptNo}
+        </if>
+        <if test="dname != null and dname != ''">
+            and dname like '%' #{dname} '%'
+        </if>
+        <if test="dmanager != null and dmanager != ''">
+            and dmanager=#{dmanager}
+        </if>
+    </select>
+
+
+    <!--
+        1. 如果where标签内部所有的判断都不成立。在查询语句中是不会出现where的
+        或者只出现where 1=1
+        2. where标签中，将第一个满足条件的语句中前部包含的[and 、or]自动取消
+      -->
+    <select id="dept_2" resultType="dept">
+        SELECT * from dept
+        <where>
+            <!-- 如果参数对象deptno不等于null并且不等于0-->
+            <if test="deptNo != null and deptNo != 0" >
+                and deptNo = #{deptNo}
+            </if>
+            <if test="dname != null and dname != ''">
+                and dname like '%' #{dname} '%'
+            </if>
+            <if test="dmanager != null and dmanager != ''">
+                and dmanager=#{dmanager}
+            </if>
+        </where>
+    </select>
+
+    <!--
+        set标签一般用在更新语句中，y用来动态指定需要更新的字段信息
+        set标签往往需要与if标签一起进行处理
+        set标签自动将最后一个更新字段后面的逗号进行取消
+    -->
+    <update id="deptUpdate">
+        <!--update dept set dname=#{dname}
+        where deptNo = #{deptNo}; -->
+        update dept
+        <set>
+            <if test="dname != null and dname != ''">
+                dname = #{dname},
+            </if>
+            <if test="dmanager != null and dmanager != ''">
+                dmanager = #{dmanager}
+            </if>
+        </set>
+        where deptno = #{deptNo}
+    </update>
+
+    <!--
+        trim标签 自定义第一个满足条件前部的代替内容
+        也可以自定义最后一个满足条件的代替内容
+    -->
+
+    <select id="dept_3" resultType="dept">
+        select * from dept
+        where
+        <trim prefixOverrides="and | or" prefix="1 = 1 and" suffixOverrides="," suffix="">
+            <if test="deptNo != null and deptNo != 0">
+                and deptno = #{deptNo}
+            </if>
+
+            <if test="dname != null and dname != ''">
+                and dname = #{dname}
+            </if>
+
+            <if test="dmanager != null and dmanager != ''">
+                and dmanager = #{dmanager} ,
+            </if>
+        </trim>
+    </select>
+
+</mapper>
