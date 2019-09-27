@@ -1,5 +1,7 @@
 package com.ll.mybatis.entity;
 
+import java.util.List;
+
 public class Dept {
 
     private Integer deptNo;
@@ -8,6 +10,9 @@ public class Dept {
     private Boolean flag;
     private Boolean status;
     private String country;
+
+    //隶属于当前部门下的所有职员集合
+    private List<Employee> employees;
 
     @Override
     public String toString() {
@@ -18,7 +23,16 @@ public class Dept {
                 ", flag=" + flag +
                 ", status=" + status +
                 ", country='" + country + '\'' +
+                ", employees=" + employees +
                 '}';
+    }
+
+    public List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
     }
 
     public String getCountry() {

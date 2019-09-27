@@ -4,11 +4,46 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Employee {
-    private Integer empNo;
+    private Integer empno;
     private String ename;
     private String job;
     private Double sal;
     private Date hireDate;
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "empno=" + empno +
+                ", ename='" + ename + '\'' +
+                ", job='" + job + '\'' +
+                ", sal=" + sal +
+                ", hireDate=" + hireDate +
+                ", dept=" + dept +
+                ", deptNo=" + deptNo +
+                ", workAge=" + workAge +
+                '}';
+    }
+
+    public Dept getDept() {
+        return dept;
+    }
+
+    public void setDept(Dept dept) {
+        this.dept = dept;
+    }
+
+    //当前职员隶属的部门信息
+    private Dept dept;
+
+    public Integer getDeptNo() {
+        return deptNo;
+    }
+
+    public void setDeptNo(Integer deptNo) {
+        this.deptNo = deptNo;
+    }
+
+    private Integer deptNo;
 
     public Employee() {
     }
@@ -24,12 +59,12 @@ public class Employee {
     //职员工作年限
     private int workAge;
 
-    public Integer getEmpNo() {
-        return empNo;
+    public Integer getEmpno() {
+        return empno;
     }
 
-    public void setEmpNo(Integer empNo) {
-        this.empNo = empNo;
+    public void setEmpno(Integer empno) {
+        this.empno = empno;
     }
 
     public String getEname() {
@@ -71,15 +106,4 @@ public class Employee {
         this.workAge = Integer.valueOf(simpleDateFormat.format(new Date())) - Integer.valueOf(simpleDateFormat.format(hireDate));
     }
 
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "empNo=" + empNo +
-                ", ename='" + ename + '\'' +
-                ", job='" + job + '\'' +
-                ", sal=" + sal +
-                ", hireDate=" + hireDate +
-                ", workAge=" + workAge +
-                '}';
-    }
 }

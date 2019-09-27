@@ -53,4 +53,32 @@
             </otherwise>
         </choose>
     </select>
+
+
+    <resultMap id="empMap2" type="employee">
+        <id column="empno" property="empno"></id>
+        <result column="ename" property="ename"></result>
+        <result column="sal" property="sal"></result>
+        <result column="job" property="job"></result>
+        <association property="dept" javaType="dept">
+            <!-- 既可以是临时表一方表主键字段值，也可以是多方表外键字段值-->
+            <result column="dept_no" property="deptNo" />
+            <result column="dname" property="dname" />
+            <result column="dmanager" property="dmanager" />
+        </association>
+    </resultMap>
+
+    <!-- 根据职员编号查询职员基本信息以及隶属部门信息-->
+    <select id="empFindByIdxxx" resultMap="empMap2">
+        select dept.deptno dept_no,
+                dname,
+                dmanager,
+                empno,ename,job,sal
+        from dept join emp
+        on dept.deptno = emp.deptno
+        where empno = #{empno}
+    </select>
+
+
+
 </mapper>

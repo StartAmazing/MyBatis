@@ -12,6 +12,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MybatisMain {
@@ -153,5 +155,113 @@ public class MybatisMain {
         mapper.deptUpdate(dept);
         session.commit();
         session.close();
+    }
+
+    @Test
+    public void testForEach() throws IOException {
+        InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(is);
+        SqlSession session = sqlSessionFactory.openSession();
+        DeptMapper mapper = session.getMapper(DeptMapper.class);
+        List<Dept> depts = new ArrayList<>();
+        Dept deptA = new Dept();
+        deptA.setDeptNo(20);
+        deptA.setDname("甄云事业部");
+        deptA.setDmanager("LuC");
+        Dept deptB = new Dept();
+        deptB.setDeptNo(30);
+        deptB.setDname("会计金融事业部");
+        deptB.setDmanager("Alice");
+        depts.add(deptA);
+        depts.add(deptB);
+        mapper.deptSave(depts);
+        session.commit();
+        session.close();
+    }
+
+    @Test
+    public void testForEach2() throws Exception{
+        InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(is);
+        SqlSession session = sqlSessionFactory.openSession();
+        DeptMapper mapper = session.getMapper(DeptMapper.class);
+        List<Integer> deptNos = new ArrayList<>();
+        deptNos.add(30);
+        deptNos.add(20);
+        deptNos.add(50);
+        List depts = mapper.deptFindByList(deptNos);
+        session.close();
+        depts.forEach(item -> {
+            System.out.println(item.toString());
+        });
+    }
+
+    @Test
+    public void testForEachArr() throws Exception{
+        InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(is);
+        SqlSession session = sqlSessionFactory.openSession();
+        DeptMapper mapper = session.getMapper(DeptMapper.class);
+        List depts = mapper.deptFindByArr(new int[]{10,20,30});
+        session.close();
+        depts.forEach(item -> {
+            System.out.println(item.toString());
+        });
+    }
+
+    @Test
+    public void testForEachMap() throws Exception{
+        InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(is);
+        SqlSession session = sqlSessionFactory.openSession();
+        DeptMapper mapper = session.getMapper(DeptMapper.class);
+        HashMap<Integer,Integer> map = new HashMap<>();
+        map.put(1121,40);
+        map.put(1222,50);
+        List depts = mapper.deptFindByMap(map);
+        session.close();
+        depts.forEach(item -> {
+            System.out.println(item.toString());
+        });
+    }
+
+    @Test
+    public void testJoinSelect() throws Exception{
+        InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(is);
+        SqlSession session = sqlSessionFactory.openSession();
+        DeptMapper mapper = session.getMapper(DeptMapper.class);
+        List<Dept> depts = mapper.deptWithEmpListFindById(10);
+        depts.forEach( dept -> {
+            depts.forEach(dept1 -> {
+                System.out.println(dept);
+            });
+            dept.getEmployees().forEach(System.out::println);
+        });
+    }
+
+    @Test
+    public void testJoinSelectWithEmp() throws Exception{
+        InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(is);
+        SqlSession session = sqlSessionFactory.openSession();
+        DeptMapper mapper = session.getMapper(DeptMapper.class);
+        List<Dept> depts = mapper.deptFindByDeptNoWithEmp(10);
+        depts.forEach( dept -> {
+            depts.forEach(dept1 -> {
+                System.out.println(dept);
+            });
+            dept.getEmployees().forEach(System.out::println);
+        });
+    }
+
+    @Test
+    public void testManyToOneWithAssosicationTag() throws Exception{
+        InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(is);
+        SqlSession session = sqlSessionFactory.openSession();
+        EmpMapper mapper = session.getMapper(EmpMapper.class);
+        Employee employee = mapper.empFindByIdxxx(3);
+        System.out.println(employee);
     }
 }

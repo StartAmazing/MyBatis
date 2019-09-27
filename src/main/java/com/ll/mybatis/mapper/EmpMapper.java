@@ -10,4 +10,6 @@ public interface EmpMapper {
 
     public List<Employee> empFind2(Employee employee);
 
+    public Employee empFindByIdxxx(Integer empno);
+
 }

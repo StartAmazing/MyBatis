@@ -111,4 +111,121 @@
         </trim>
     </select>
 
+    <!--
+        批处理的添加标签
+    -->
+    <insert id="deptSave">
+        insert into dept(deptno,dname,dmanager)
+        values
+        <foreach collection="list" item="dept" separator=",">
+            (#{dept.deptNo},#{dept.dname},#{dept.dmanager})
+        </foreach>
+    </insert>
+
+    <!--
+        使用List集合保存查询条件(deptno)
+    -->
+<!--    <select id="deptFindByList" resultType="com.ll.mybatis.entity.Employee"> 匹配类型不匹配抛出空指针异常-->
+    <select id="deptFindByList" resultType="com.ll.mybatis.entity.Dept">
+        select deptno,dname,dmanager
+        from
+        dept
+        where deptno in
+        <!-- open和close分别表示在第一次遍历时增加( 以及在最后一次循环的时候添加) -->
+        <foreach collection="list" item="deptno" open="(" close=")" separator=",">
+            #{deptno}
+        </foreach>
+    </select>
+
+    <!--  使用Array保存查询条件(deptno) -->
+    <select id="deptFindByArr" resultType="com.ll.mybatis.entity.Dept">
+        select deptno,dname,dmanager
+        from
+        dept
+        where deptno in
+        <!-- open和close分别表示在第一次遍历时增加( 以及在最后一次循环的时候添加) -->
+        <foreach collection="array" item="deptno" open="(" close=")" separator=",">
+            #{deptno}
+        </foreach>
+    </select>
+
+    <!-- foreach by map -->
+    <select id="deptFindByMap" resultType="com.ll.mybatis.entity.Dept">
+        select deptno,dname,dmanager
+        from
+        dept
+        where deptno in
+        <!-- open和close分别表示在第一次遍历时增加( 以及在最后一次循环的时候添加) -->
+        <foreach collection="myMap.values" item="deptno" open="(" close=")" separator=",">
+            #{deptno}
+        </foreach>
+    </select>
+
+
+    <resultMap id="deptMap" type="dept">
+        <id column="dept_deptno" property="deptNo" />
+        <result column="dname" property="dname" />
+        <result column="dmanger" property="dmanager"/>
+        <!--
+            collection标签中column属性中应该填写查询临时表中来自于一方表主键字段名
+            -->
+        <collection property="employees" ofType="employee" column="dept_deptno">
+            <id column="empno" property="empno"></id>
+            <result column="ename" property="ename"></result>
+        </collection>
+    </resultMap>
+
+    <!--
+        级联一对多查询操作
+        查询当前部门下所有职员的名称以及对应的详细信息
+    -->
+    <select id="deptWithEmpListFindById" resultMap="deptMap">
+        select dept.deptno dept_deptno,
+                dname,
+                dmanager,
+                empno,
+                ename,
+                job,
+                sal
+         from dept join emp
+         on dept.deptno = emp.deptno
+         where dept.deptno=#{deptno}
+    </select>
+
+
+
+    <resultMap id="deptMap2" type="dept">
+        <id column="dept_deptno" property="deptNo" />
+        <result column="dname" property="dname" />
+        <result column="dmanger" property="dmanager"/>
+        <!--
+            collection标签中column属性中应该填写查询临时表中来自于一方表主键字段名
+            -->
+        <collection property="employees"
+                    ofType="employee"
+                    select="empFindByDeptNo"
+                    column="dept_dedptno">
+        </collection>
+    </resultMap>
+
+    <!-- 根据部门编号查询部门中职员信息 -->
+    <select id="empFindByDeptNo" resultType="employee">
+        select
+            empno,ename,job
+        from
+            emp
+        where
+            deptno = #{deptno}
+    </select>
+
+    <!--根据部门编号 查询部门信息-->
+    <select id="deptFindByDeptNoWithEmp" resultMap="deptMap2">
+        select
+            deptno dept_dedptno,dname,dmanager
+        from
+            dept
+        where
+            deptno = #{deptno}
+    </select>
+
 </mapper>
